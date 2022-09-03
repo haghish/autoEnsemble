@@ -1,11 +1,27 @@
-Package: ensembleR
+Package: ensemble
 Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Title: An AutoML Algorithm for Building Homogeneous or Heterogeneous Stacked 
+       Ensemble Models by Searching for Diverse Base-Learners
+Version: 0.0.1
+Authors@R: 
+    person("E. F. Haghish",
+           role = c("aut", "cre", "cph"),
+           email = "haghish@uio.no")
+Depends: 
+    R (>= 3.5.0)
+Description: An automated machine learning algorithm (AutoML) is designed to 
+             create homogeneous or heterogeneous stacked ensemble models from 
+             the given base-learners. In doing so, different criteria are used 
+             to identify the best models, which increase the diversity among the 
+             selected models, leading to stronger stacked ensemble models. Only 
+             h2o.ai models are supported.
+License: MIT + file LICENSE
 Encoding: UTF-8
-LazyData: true
+Imports:
+    h2o (>= 3.34.0.0),
+    curl (>= 4.3.0),
+    mlim,
+    md.log (>= 0.2.0)
+RoxygenNote: 7.2.1
+URL: https://github.com/haghish/ensemble, https://www.sv.uio.no/psi/english/people/aca/haghish/
+BugReports: https://github.com/haghish/ensemble/issues
