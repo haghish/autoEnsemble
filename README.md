@@ -10,3 +10,4 @@ Building a successfult stacked ensemble models is based on two principles:
 
 While the first principle is easy to assess with straight-forward model evaluation criteria, searching for _diverse excellent models_ is not that easy. The **`ensemble`** R package implements an auomated machine learning algorithm that identifies excellent - yet destinct - models and stacks them to build an excellent stacked ensemble model. 
 
+> the repository is half-public and the code will be made publically available in the near future
