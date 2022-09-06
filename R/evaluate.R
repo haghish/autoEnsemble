@@ -1,7 +1,9 @@
 
 
 
-
+#' @importFrom h2o h2o.getModel h2o.performance h2o.auc h2o.aucpr h2o.mcc
+#'             h2o.F2 h2o.mean_per_class_error h2o.giniCoef h2o.accuracy
+#' @importFrom h2otools Fmeasure
 
 
 
