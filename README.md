@@ -1,6 +1,6 @@
 <a href="https://github.com/haghish/ensemble"><img src='man/figures/logo.PNG' align="right" height="200" /></a>
 
-`ensemble` : An AutoML Algorithm for Building Homogeneous or Heterogeneous Stacked Ensemble Models by Searching for Diverse Base-Learners
+`ensemble` : An AutoML Algorithm for Building Homogeneous and Heterogeneous Stacked Ensemble Models by Searching for Diverse Base-Learners
 =========================================================================================================================================
 
 Building a successfult stacked ensemble models is based on two principles:
