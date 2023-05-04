@@ -11,7 +11,7 @@ Building a successfult stacked ensemble models is based on two principles:
 While the first principle is easy to assess with straight-forward model evaluation criteria, searching for _diverse excellent models_ is not that easy. The **`ensemble`** R package implements an auomated machine learning algorithm that identifies excellent - yet destinct - models and stacks them to build an excellent stacked ensemble model. Currently, 2 strategies are programmed:
 
 Strategy    | Description
-=========== | ===========
+----------- | -----------
 _top_       | combines top-ranked models identified by specific set of model performance metrics
 _stop_      | combines top-ranked models identified by specific set of model performance metrics, as long as the ensemble model keeps improving
 
