@@ -1,10 +1,34 @@
-
-
-
+#' @title Evaluate H2O Model(s) Performance
+#' @description Multiple model performance metrics are computed
+#' @importFrom utils setTxtProgressBar txtProgressBar
 #' @importFrom h2o h2o.getModel h2o.performance h2o.auc h2o.aucpr h2o.mcc
 #'             h2o.F2 h2o.mean_per_class_error h2o.giniCoef h2o.accuracy
 #' @importFrom h2otools Fmeasure kappa
-#' @importFrom utils setTxtProgressBar txtProgressBar
+#' @importFrom curl curl
+#' @param perf a h2o object of class \code{"H2OBinomialMetrics"} which is provided
+#'             by 'h2o.performance' function.
+#' @param max logical. default is FALSE. if TRUE, instead of providing the F-Measure
+#'            for all the thresholds, the highest F-Measure is reported.
+#' @return a matrix of F-Measures for different thresholds or the highest F-Measure value
+#' @author E. F. Haghish
+#'
+#' @examples
+#'
+#' \dontrun{
+#' library(h2o)
+#' h2o.init(ignore_config = TRUE, nthreads = 2, bind_to_localhost = FALSE, insecure = TRUE)
+#' prostate_path <- system.file("extdata", "prostate.csv", package = "h2o")
+#' prostate <- h2o.importFile(path = prostate_path, header = TRUE)
+#' y <- "CAPSULE"
+#' prostate[,y] <- as.factor(prostate[,y])  #convert to factor for classification
+#' aml <- h2o.automl(y = y, training_frame = prostate, max_runtime_secs = 30)
+#'
+#' # evaluate the model performance
+#' perf <- h2o.performance(aml@leader, xval = TRUE)
+#'
+#' # evaluate F-Measure for a Beta = 3
+#' kappa(perf, max = TRUE)
+#' }
 #' @export
 
 evaluate <- function(id, newdata = NULL,
@@ -28,11 +52,11 @@ evaluate <- function(id, newdata = NULL,
                                  xval = xval)
 
     # calculate the model metrics
-    auc <- h2o::h2o.auc(perf)
-    aucpr <- h2o::h2o.aucpr(perf)
+    auc <- as.numeric(h2o::h2o.auc(perf))
+    aucpr <- as.numeric(h2o::h2o.aucpr(perf))
     mcc <- max(h2o::h2o.mcc(perf)[,2])
     f1point5 <- h2otools::Fmeasure(perf, beta = 1.5, max=TRUE)
-    f2 <- max(h2o::h2o.F2(perf)[,2])
+    f2 <- h2otools::Fmeasure(perf, beta = 2, max=TRUE) #max(h2o::h2o.F2(perf)[,2])
     f3 <- h2otools::Fmeasure(perf, beta = 3, max=TRUE)
     f4 <- h2otools::Fmeasure(perf, beta = 4, max=TRUE)
     f5 <- h2otools::Fmeasure(perf, beta = 5, max=TRUE)
@@ -41,26 +65,27 @@ evaluate <- function(id, newdata = NULL,
     gini <- h2o::h2o.giniCoef(perf)
     accuracy <- max(h2o::h2o.accuracy(perf)[,2])
 
-    res <- c(i, auc, aucpr, mcc, f1point5, f2, f3, f4, f5,
-             mpce, kappa, gini, accuracy)
+    res <- as.data.frame(matrix(c(i, auc, aucpr, mcc, f2,
+             f1point5, f3, f4, f5, kp,
+             mpce, gini, accuracy), nrow = 1))
 
-    names(res) <- c("id","auc","aucpr","mcc","f1point5",
-                    "f2","f3","f4","f5","mean_per_class_error","kappa","gini","accuracy")
+    colnames(res) <- c("id","auc","aucpr","mcc","f2",
+                    "f1point5","f3","f4","f5","kappa",
+                    "mean_per_class_error","gini","accuracy")
 
-    results <- rbind(results, res)
+    results <- rbind(results, as.data.frame(res))
 
     z <- z + 1
     setTxtProgressBar(pb, z)
   }
 
+  # sort the data
   results <- as.data.frame(results)
-  class(results) <- "ensemble.eval"
+  #results <- results[order(aucpr, auc, f2),]
+  results <- results[order(auc),]
 
+  class(results) <- c("ensemble.eval", "data.frame")
   return(results)
 }
 
 
-# a <- automl.evaluate(aml, xval = TRUE)
-# aml@leaderboard
-# View(a)
-# automl.names(aml)
