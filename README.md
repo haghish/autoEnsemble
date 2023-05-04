@@ -44,7 +44,7 @@ aml <- h2o.automl(y = y, training_frame = prostate, max_runtime_secs = 120,
                   include_algos=c("DRF","GLM", "XGBoost", "GBM", "DeepLearning"),
                   
                   # this setting ensures the models are comparable for building a meta learner
-                  seed = 2023, fold_assignment = "Modulo", nfolds = 10, 
+                  seed = 2023, nfolds = 10, 
                   keep_cross_validation_predictions = TRUE
                   )
 
