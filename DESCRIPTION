@@ -2,7 +2,7 @@ Package: ensemble
 Type: Package
 Title: An AutoML Algorithm for Building Homogeneous or Heterogeneous Stacked 
        Ensemble Models by Searching for Diverse Base-Learners
-Version: 0.0.1
+Version: 0.1
 Authors@R: 
     person("E. F. Haghish",
            role = c("aut", "cre", "cph"),
