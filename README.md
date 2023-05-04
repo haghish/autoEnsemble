@@ -36,16 +36,16 @@ prostate <- h2o.importFile(path = prostate_path, header = TRUE)
 ### for building the ensemble, just to set an example ... 
 
 #######################################################
-### PREPARE AutoML Grid
+### PREPARE AutoML Grid (takes a couple of minutes)
 #######################################################
-# run AutoML to tune various models (GLM, GBM, XGBoost, DRF, DeepLearning) for 30 seconds
+# run AutoML to tune various models (GLM, GBM, XGBoost, DRF, DeepLearning) for 120 seconds
 y <- "CAPSULE"
 prostate[,y] <- as.factor(prostate[,y])  #convert to factor for classification
-aml <- h2o.automl(y = y, training_frame = prostate, max_runtime_secs = 60,
+aml <- h2o.automl(y = y, training_frame = prostate, max_runtime_secs = 120,
                   include_algos=c("DRF","GLM", "XGBoost", "GBM", "DeepLearning"))
 
 #######################################################
-### PREPARE H2O Grid (takes a couple of minutes)
+### PREPARE H2O Grid 
 #######################################################
 grid <- h2o.grid(algorithm = "gbm", y = y, training_frame = prostate,
                  hyper_params = list(ntrees = seq(1,50,1)))
@@ -54,10 +54,11 @@ grid <- h2o.grid(algorithm = "gbm", y = y, training_frame = prostate,
 ### PREPARE ENSEMBLE MODEL
 #######################################################
 
-# get the models' IDs from the AutoML grid
-ids <- c(h2o.ids(aml), h2o.ids(grid))
+### get the models' IDs from the AutoML and grid searches. 
+### this is all that is needed before building the ensemble, 
+### i.e., to specify the model IDs that should be evaluated.
 
-# RUN THE ENSEMBLE FOR ALL STRATEGIES
+ids <- c(h2o.get_ids(aml), h2o.get_ids(grid))
 ens <- ensemble(models = ids, training_frame = prostate)
 
 # evaluate the model performance of the best model
