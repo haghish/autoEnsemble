@@ -8,6 +8,7 @@ ensemble(
   models,
   training_frame,
   newdata = NULL,
+  family = "binary",
   strategy = c("search"),
   model_selection_criteria = c("auc", "aucpr", "mcc", "f2"),
   max = NULL,
@@ -30,6 +31,9 @@ retrieve the IDs from grids.}
 on h2o server (cloud). when specified, this dataset will be used
 for evaluating the models. if not specified, model performance
 on the training dataset will be reported.}
+
+\item{family}{model family. currently only \code{"binary"} classification models
+are supported.}
 
 \item{strategy}{character. the current available strategies are \code{"search"}
 (default) and \code{"top"}. The \code{"search"} strategy searches
@@ -60,6 +64,9 @@ is \code{"top"}, only the first value of the vector is used
 
 \item{stop_rounds}{integer. number of stoping rounds, in case the model stops
 improving}
+
+\item{reset_stop_rounds}{logical. if TRUE, everytime the model improves the
+stopping rounds penalty is resets to 0.}
 
 \item{stop_metric}{character. model stopping metric. the default is \code{"auc"},
 but \code{"aucpr"} and \code{"mcc"} are also available.}
