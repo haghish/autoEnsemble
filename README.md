@@ -9,11 +9,13 @@
 2. The base-learners are diverse, i.e., their error is not correlated. 
 
 While the first principle is easy to assess with straight-forward model evaluation criteria, searching for _diverse excellent models_ is not that easy. The **`ensemble`** R package implements an auomated machine learning algorithm that identifies excellent - yet destinct - models and stacks them to build an excellent stacked ensemble model. Currently, 2 strategies are programmed, __top__ and __stop__:
-  
+
+<!--
 Strategy    | Description
 ----------- | -----------
-_top_       | combines top-ranked models identified by specific set of model performance metrics
-_stop_      | combines top-ranked models identified by specific set of model performance metrics, as long as the ensemble model keeps improving
+_top_       | combines top-ranked models identified by specific set of model performance metrics. this strategy is a particular case of the `stop` strategy and is not expected to perform better than `stop`, however, it is less computationally extensive. You only have to specify the top percentage of models to be used for modeling. The drawback is that often, you do not know what is the optimum number of models to be combined and that is why the `stop` procedure is applied by default, to search for the optimal number of diverse models that deliver the best results. 
+_stop_      | combines diverse top-ranked models identified by specific set of model performance metrics, as long as the ensemble model keeps improving. This strategy is expected to outperform `top` strategy, but requires longer computation time to gradually combine diverse top models and examine the improvement of the resulting model. 
+-->
 
 What makes these strategies destinct is the procedure of _model evaluation and selection_, not the procedure of building the ensemble. The algorithm will be explained in a journal article (to be expected in 2023). 
 
