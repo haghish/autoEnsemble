@@ -7,9 +7,9 @@
 evaluate(id, newdata = NULL, ...)
 }
 \arguments{
-\item{id}{a character vector of H2O model IDs retreived from H2O Grid search
+\item{id}{a character vector of H2O model IDs retrieved from H2O Grid search
 or AutoML random search. the \code{"h2o.get_ids"} function from
-\code{"h2otools"} can retreive the IDs from grids.}
+\code{"h2otools"} can retrieve the IDs from grids.}
 
 \item{newdata}{h2o frame (data.frame). the data.frame must be already uploaded
 on h2o server (cloud). when specified, this dataset will be used
