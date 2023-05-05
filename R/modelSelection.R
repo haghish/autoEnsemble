@@ -1,19 +1,14 @@
 #' @title Selects Diverse Top-Performing Models for Stacking an Ensemble Model
 #' @description Multiple model performance metrics are computed
-#' @importFrom utils setTxtProgressBar txtProgressBar
-#' @importFrom h2o h2o.performance h2o.auc h2o.aucpr h2o.mcc
-#'             h2o.F2 h2o.mean_per_class_error h2o.giniCoef h2o.accuracy
-#' @importFrom h2otools Fmeasure kappa
-#' @importFrom curl curl
 #' @param eval an object of class \code{"ensemble.eval"} which is provided
 #'             by 'evaluate' function. this object is a data.frame, including
 #'             several performance metrics for the evaluated models.
 #' @param family model family. currently only \code{"binary"} classification models
 #'               are supported.
 #' @param top_rank numeric. what percentage of the top model should be selected?
-#'                 the default value is top 1% models.
+#'                 the default value is top 1\% models.
 #' @param max integer. specifies maximum number of models for each criteria to be extracted. the
-#'            default value is the \code{"top_rank} percentage for each model selection
+#'            default value is the \code{"top_rank"} percentage for each model selection
 #'            criteria.
 #' @param model_selection_criteria character, specifying the performance metrics that
 #'        should be taken into consideration for model selection. the default are
