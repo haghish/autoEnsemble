@@ -49,41 +49,75 @@
 #' @examples
 #'
 #' \dontrun{
-#' # initiate h2o server
+#' # load the required libraries for building the base-learners and the ensemble models
 #' library(h2o)
+#' library(h2otools)
+#' library(ensemble)
+#'
+#' # initiate the h2o server
 #' h2o.init(ignore_config = TRUE, nthreads = 2, bind_to_localhost = FALSE, insecure = TRUE)
 #'
 #' # upload data to h2o cloud
 #' prostate_path <- system.file("extdata", "prostate.csv", package = "h2o")
 #' prostate <- h2o.importFile(path = prostate_path, header = TRUE)
 #'
-#' #######################################################
-#' ### PREPARE AutoML Grid
-#' #######################################################
+#' ### H2O provides 2 types of grid search for tuning the models, which are
+#' ### AutoML and Grid. Below, I tune 2 set of model grids and use them both
+#' ### for building the ensemble, just to set an example ...
 #'
-#' # run AutoML to tune various models (GLM, GBM, XGBoost, DRF, DeepLearning) for 30 seconds
+#' #######################################################
+#' ### PREPARE AutoML Grid (takes a couple of minutes)
+#' #######################################################
+#' # run AutoML to tune various models (GLM, GBM, XGBoost, DRF, DeepLearning) for 120 seconds
 #' y <- "CAPSULE"
 #' prostate[,y] <- as.factor(prostate[,y])  #convert to factor for classification
-#' aml <- h2o.automl(y = y, training_frame = prostate, max_runtime_secs = 30,
-#'                   include_algos=c("DRF","GLM", "XGBoost", "GBM", "DeepLearning"))
+#' aml <- h2o.automl(y = y, training_frame = prostate, max_runtime_secs = 120,
+#'                  include_algos=c("DRF","GLM", "XGBoost", "GBM", "DeepLearning"),
+#'
+#'                  # this setting ensures the models are comparable for building a meta learner
+#'                  seed = 2023, nfolds = 10,
+#'                  keep_cross_validation_predictions = TRUE)
 #'
 #' #######################################################
 #' ### PREPARE H2O Grid (takes a couple of minutes)
 #' #######################################################
+#' # make sure equal number of "nfolds" is specified for different grids
 #' grid <- h2o.grid(algorithm = "gbm", y = y, training_frame = prostate,
-#'                 hyper_params = list(ntrees = seq(1,500,5)))
+#'                  hyper_params = list(ntrees = seq(1,50,1)),
+#'                  grid_id = "ensemble_grid",
+#'
+#'                  # this setting ensures the models are comparable for building a meta learner
+#'                  seed = 2023, fold_assignment = "Modulo", nfolds = 10,
+#'                  keep_cross_validation_predictions = TRUE)
 #'
 #' #######################################################
 #' ### PREPARE ENSEMBLE MODEL
 #' #######################################################
 #'
-#' # get the models' IDs from the AutoML grid
-#' ids <- c(h2o.ids(aml), h2o.ids(grid))
+#' ### get the models' IDs from the AutoML and grid searches.
+#' ### this is all that is needed before building the ensemble,
+#' ### i.e., to specify the model IDs that should be evaluated.
 #'
-#' # RUN THE ENSEMBLE FOR ALL STRATEGIES
+#' ids <- c(h2o.get_ids(aml), h2o.get_ids(grid))
 #' ens <- ensemble(models = ids, training_frame = prostate)
 #'
+#' #######################################################
+#' ### EVALUATE THE MODELS
+#' #######################################################
+#'
 #' # evaluate the model performance of the best model
+#' top <- ensemble(models = ids, training_frame = prostate, strategy = "top")
+#' search <- ensemble(models = ids, training_frame = prostate, strategy = "search")
+#'
+#' # evaluate the model performance of the best model
+#' top_perf  <- h2o.performance(top)
+#' search_perf <- h2o.performance(search)
+#'
+#' # check the AUC of the two models
+#' h2o.auc(aml@leader)                          # best model identified by h2o.automl
+#' h2o.auc(h2o.getModel(grid@model_ids[[1]])).  # best model identified by grid search
+#' h2o.auc(top_perf)                            # ensemble model with 'top' search strategy
+#' h2o.auc(stop_perf)                           # ensemble model with 'stop' search strategy
 #'
 #' }
 #' @export
