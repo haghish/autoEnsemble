@@ -53,7 +53,8 @@ evaluate <- function(id, newdata = NULL, ...) {
     perf <- h2o::h2o.performance(model = h2o::h2o.getModel(i), newdata = newdata, ...)
 
     if (is.null(perf)) {
-      if (xval) stop("cross-validation metrics failed. did you specify 'nfolds' correctly?")
+      #if (xval) stop("cross-validation metrics failed. did you specify 'nfolds' correctly?")
+      stop("cross-validation metrics failed. did you specify 'nfolds' correctly?")
     }
 
     # calculate the model metrics
