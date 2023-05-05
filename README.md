@@ -49,8 +49,7 @@ aml <- h2o.automl(y = y, training_frame = prostate, max_runtime_secs = 120,
                   
                   # this setting ensures the models are comparable for building a meta learner
                   seed = 2023, nfolds = 10, 
-                  keep_cross_validation_predictions = TRUE
-                  )
+                  keep_cross_validation_predictions = TRUE)
 
 #######################################################
 ### PREPARE H2O Grid 
