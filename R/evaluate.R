@@ -5,11 +5,15 @@
 #'             h2o.mean_per_class_error h2o.giniCoef h2o.accuracy
 #' @importFrom h2otools Fmeasure kappa
 #' @importFrom curl curl
-#' @param perf a h2o object of class \code{"H2OBinomialMetrics"} which is provided
-#'             by 'h2o.performance' function.
-#' @param max logical. default is FALSE. if TRUE, instead of providing the F-Measure
-#'            for all the thresholds, the highest F-Measure is reported.
-#' @return a matrix of F-Measures for different thresholds or the highest F-Measure value
+#' @param id a character vector of H2O model IDs retreived from H2O Grid search
+#'           or AutoML random search. the \code{"h2o.get_ids"} function from
+#'           \code{"h2otools"} can retreive the IDs from grids.
+#' @param newdata h2o frame (data.frame). the data.frame must be already uploaded
+#'                on h2o server (cloud). when specified, this dataset will be used
+#'                for evaluating the models. if not specified, model performance
+#'                on the training dataset will be reported.
+#' @param ... arguments to be passed to \code{"h2o.performance"} from H2O package
+#' @return a data.frame of various model performance metrics for each model
 #' @author E. F. Haghish
 #'
 #' @examples
@@ -38,12 +42,7 @@
 #' }
 #' @export
 
-evaluate <- function(id, newdata = NULL,
-                     train = FALSE, valid = FALSE, xval = FALSE) {
-
-  # # if no data is provided, and train and valid are FALSE,
-  # # then report cross validation (or return an error)
-  # if (is.null(newdata) & !train & !valid) xval <- TRUE
+evaluate <- function(id, newdata = NULL, ...) {
 
   # collect the models' measures
   results <- NULL
@@ -52,11 +51,7 @@ evaluate <- function(id, newdata = NULL,
 
   for (i in id) {
     model <- h2o::h2o.getModel(i)
-    perf <- h2o::h2o.performance(model = model,
-                                 newdata = newdata,
-                                 train = train,
-                                 valid = valid,
-                                 xval = xval)
+    perf <- h2o::h2o.performance(model = model, newdata = newdata, ...)
 
     if (is.null(perf)) {
       if (xval) stop("cross-validation metrics failed. did you specify 'nfolds' correctly?")
