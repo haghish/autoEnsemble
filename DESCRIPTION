@@ -13,7 +13,9 @@ Description: An automated machine learning algorithm (AutoML) is designed to
              create homogeneous or heterogeneous stacked ensemble models from 
              the given base-learners. In doing so, different criteria are used 
              to identify the best models, which increase the diversity among the 
-             selected models, leading to stronger stacked ensemble models. Only 
+             selected models, leading to stronger stacked ensemble models. next, 
+             the model is optimized for a vombination of diverse models, gradually
+             increasing in including number of top-performing models. Currently, only 
              h2o.ai models are supported.
 License: MIT + file LICENSE
 Encoding: UTF-8

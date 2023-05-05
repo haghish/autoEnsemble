@@ -13,6 +13,8 @@
 #'                on h2o server (cloud). when specified, this dataset will be used
 #'                for evaluating the models. if not specified, model performance
 #'                on the training dataset will be reported.
+#' @param family model family. currently only \code{"binary"} classification models
+#'               are supported.
 #' @param strategy character. the current available strategies are \code{"search"}
 #'                 (default) and \code{"top"}. The \code{"search"} strategy searches
 #'                 for the best combination of top-performing diverse models
@@ -38,6 +40,8 @@
 #'                 (default value is top 1\%).
 #' @param stop_rounds integer. number of stoping rounds, in case the model stops
 #'                    improving
+#' @param reset_stop_rounds logical. if TRUE, everytime the model improves the
+#'                          stopping rounds penalty is resets to 0.
 #' @param stop_metric character. model stopping metric. the default is \code{"auc"},
 #'                    but \code{"aucpr"} and \code{"mcc"} are also available.
 #' @param seed random seed (recommended)
@@ -116,6 +120,7 @@
 ensemble <- function(models,
                      training_frame,
                      newdata = NULL,
+                     family = "binary",
                      strategy = c("search"),
                      model_selection_criteria = c("auc","aucpr","mcc","f2"),
                      max = NULL,
@@ -131,6 +136,8 @@ ensemble <- function(models,
 
   modelTOP  <- NULL
   modelSTOP <- NULL
+
+  if (family != "binary") stop("currently only 'binary' classification models are supported")
 
   # STEP 0: prepare the models
   # ============================================================
