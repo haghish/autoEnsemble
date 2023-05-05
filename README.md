@@ -53,7 +53,7 @@ aml <- h2o.automl(y = y, training_frame = prostate, max_runtime_secs = 120,
 #######################################################
 # make sure equal number of "nfolds" is specified for different grids
 grid <- h2o.grid(algorithm = "gbm", y = y, training_frame = prostate,
-                 hyper_params = list(ntrees = seq(1,50,1)),
+                 hyper_params = list(ntrees = seq(1,50,1)), grid_id = "ensemble_grid",
                  
                  # this setting ensures the models are comparable for building a meta learner
                  seed = 2023, fold_assignment = "Modulo", nfolds = 10, 
@@ -79,8 +79,10 @@ top_perf  <- h2o.performance(ens$top)
 stop_perf <- h2o.performance(ens$stop)
 
 # check the AUC of the two models
-h2o.auc(top_perf)
-h2o.auc(stop_perf)
+h2o.auc(aml@leader)                          # best model identified by h2o.automl
+h2o.auc(h2o.getModel(grid@model_ids[[1]])).  # best model identified by grid search
+h2o.auc(top_perf)                            # ensemble model with 'top' search strategy
+h2o.auc(stop_perf)                           # ensemble model with 'stop' search strategy
 
-# > both strategies had identical results. Yet, this was a small dataset, and a quick test. 
+# > both 'top' and 'stop' strategies had identical results, but out perform the grid search and AutoML search. Yet, this was a small dataset, and a quick test... 
 ```
