@@ -10,12 +10,11 @@
 
 While the first principle is easy to assess with straight-forward model evaluation criteria, searching for _diverse excellent models_ is not that easy. The **`ensemble`** R package implements an auomated machine learning algorithm that identifies excellent - yet destinct - models and stacks them to build an excellent stacked ensemble model. Currently, 2 strategies are programmed, __top__ and __stop__:
 
-<!--
 Strategy    | Description
 ----------- | -----------
 _top_       | combines top-ranked models identified by specific set of model performance metrics. this strategy is a particular case of the `stop` strategy and is not expected to perform better than `stop`, however, it is less computationally extensive. You only have to specify the top percentage of models to be used for modeling. The drawback is that often, you do not know what is the optimum number of models to be combined and that is why the `stop` procedure is applied by default, to search for the optimal number of diverse models that deliver the best results. 
 _stop_      | combines diverse top-ranked models identified by specific set of model performance metrics, as long as the ensemble model keeps improving. This strategy is expected to outperform `top` strategy, but requires longer computation time to gradually combine diverse top models and examine the improvement of the resulting model. 
--->
+
 
 What makes these strategies destinct is the procedure of _model evaluation and selection_, not the procedure of building the ensemble. The algorithm will be explained in a journal article (to be expected in 2023). 
 
@@ -63,29 +62,24 @@ grid <- h2o.grid(algorithm = "gbm", y = y, training_frame = prostate,
                  keep_cross_validation_predictions = TRUE)
 
 #######################################################
-### PREPARE ENSEMBLE MODEL
+### PREPARE ENSEMBLE MODELS
 #######################################################
 
-### get the models' IDs from the AutoML and grid searches. 
-### this is all that is needed before building the ensemble, 
+### get the models' IDs from the AutoML and grid searches.
+### this is all that is needed before building the ensemble,
 ### i.e., to specify the model IDs that should be evaluated.
 
 ids <- c(h2o.get_ids(aml), h2o.get_ids(grid))
-ens <- ensemble(models = ids, training_frame = prostate)
+top <- ensemble(models = ids, training_frame = prostate, strategy = "top")
+search <- ensemble(models = ids, training_frame = prostate, strategy = "search")
 
 #######################################################
 ### EVALUATE THE MODELS
 #######################################################
-
-# evaluate the model performance of the best model
-top_perf  <- h2o.performance(ens$top)
-stop_perf <- h2o.performance(ens$stop)
-
-# check the AUC of the two models
 h2o.auc(aml@leader)                          # best model identified by h2o.automl
-h2o.auc(h2o.getModel(grid@model_ids[[1]])).  # best model identified by grid search
-h2o.auc(top_perf)                            # ensemble model with 'top' search strategy
-h2o.auc(stop_perf)                           # ensemble model with 'stop' search strategy
+h2o.auc(h2o.getModel(grid@model_ids[[1]]))   # best model identified by grid search
+h2o.auc(top).                                # ensemble model with 'top' search strategy
+h2o.auc(search).                             # ensemble model with 'stop' search strategy
 
 # > both 'top' and 'stop' strategies had identical results, but out perform the grid search and AutoML search. Yet, this was a small dataset, and a quick test... 
 ```
