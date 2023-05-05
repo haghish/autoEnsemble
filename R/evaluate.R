@@ -1,8 +1,8 @@
 #' @title Evaluate H2O Model(s) Performance
-#' @description Multiple model performance metrics are computed
+#' @description Multiple model performance metrics are computed for each model
 #' @importFrom utils setTxtProgressBar txtProgressBar
 #' @importFrom h2o h2o.getModel h2o.performance h2o.auc h2o.aucpr h2o.mcc
-#'             h2o.F2 h2o.mean_per_class_error h2o.giniCoef h2o.accuracy
+#'             h2o.mean_per_class_error h2o.giniCoef h2o.accuracy
 #' @importFrom h2otools Fmeasure kappa
 #' @importFrom curl curl
 #' @param perf a h2o object of class \code{"H2OBinomialMetrics"} which is provided
@@ -16,27 +16,34 @@
 #'
 #' \dontrun{
 #' library(h2o)
+#' library(h2otools) #for h2o.get_ids() function
+#' library(ensemble)
+#'
+#' # initiate the H2O server to train a grid of models
 #' h2o.init(ignore_config = TRUE, nthreads = 2, bind_to_localhost = FALSE, insecure = TRUE)
+#'
+#' # Run a grid search or AutoML search
 #' prostate_path <- system.file("extdata", "prostate.csv", package = "h2o")
 #' prostate <- h2o.importFile(path = prostate_path, header = TRUE)
 #' y <- "CAPSULE"
 #' prostate[,y] <- as.factor(prostate[,y])  #convert to factor for classification
-#' aml <- h2o.automl(y = y, training_frame = prostate, max_runtime_secs = 30)
+#' aml <- h2o.automl(y = y, training_frame = prostate, max_runtime_secs = 30,
+#'                   seed = 2023, nfolds = 10, keep_cross_validation_predictions = TRUE)
 #'
-#' # evaluate the model performance
-#' perf <- h2o.performance(aml@leader, xval = TRUE)
+#' # get the model IDs from the H2O Grid search or H2O AutoML Grid
+#' ids <- h2otools::h2o.get_ids(aml)
 #'
-#' # evaluate F-Measure for a Beta = 3
-#' kappa(perf, max = TRUE)
+#' # evaluate all the models and return a dataframe
+#' evals <- evaluate(id = ids)
 #' }
 #' @export
 
 evaluate <- function(id, newdata = NULL,
                      train = FALSE, valid = FALSE, xval = FALSE) {
 
-  # if no data is provided, and train and valid are FALSE,
-  # then report cross validation (or return an error)
-  if (is.null(newdata) & !train & !valid) xval <- TRUE
+  # # if no data is provided, and train and valid are FALSE,
+  # # then report cross validation (or return an error)
+  # if (is.null(newdata) & !train & !valid) xval <- TRUE
 
   # collect the models' measures
   results <- NULL
@@ -60,7 +67,7 @@ evaluate <- function(id, newdata = NULL,
     aucpr <- as.numeric(h2o::h2o.aucpr(perf))
     mcc <- max(h2o::h2o.mcc(perf)[,2], na.rm = TRUE)
     f1point5 <- h2otools::Fmeasure(perf, beta = 1.5, max=TRUE)
-    f2 <- h2otools::Fmeasure(perf, beta = 2, max=TRUE) #max(h2o::h2o.F2(perf)[,2])
+    f2 <- h2otools::Fmeasure(perf, beta = 2, max=TRUE)
     f3 <- h2otools::Fmeasure(perf, beta = 3, max=TRUE)
     f4 <- h2otools::Fmeasure(perf, beta = 4, max=TRUE)
     f5 <- h2otools::Fmeasure(perf, beta = 5, max=TRUE)
@@ -84,8 +91,6 @@ evaluate <- function(id, newdata = NULL,
   }
 
   # sort the data
-  #results <- as.data.frame(results)
-  #results <- results[order(aucpr, auc, f2),]
   results <- results[order(results$auc, decreasing = TRUE),]
 
   class(results) <- c("ensemble.eval", "data.frame")
