@@ -32,10 +32,9 @@
 #' @export
 
 evaluate <- function(id, newdata = NULL,
-                     train = FALSE, valid = FALSE,
-                     xval = FALSE) {
+                     train = FALSE, valid = FALSE, xval = FALSE) {
 
-  # if no data is provided, an train and valid are FALSE,
+  # if no data is provided, and train and valid are FALSE,
   # then report cross validation (or return an error)
   if (is.null(newdata) & !train & !valid) xval <- TRUE
 
@@ -45,16 +44,21 @@ evaluate <- function(id, newdata = NULL,
   pb <- txtProgressBar(z, length(id), style = 3)
 
   for (i in id) {
-    perf <- h2o::h2o.performance(h2o::h2o.getModel(i),
+    model <- h2o::h2o.getModel(i)
+    perf <- h2o::h2o.performance(model = model,
                                  newdata = newdata,
                                  train = train,
                                  valid = valid,
                                  xval = xval)
 
+    if (is.null(perf)) {
+      if (xval) stop("cross-validation metrics failed. did you specify 'nfolds' correctly?")
+    }
+
     # calculate the model metrics
     auc <- as.numeric(h2o::h2o.auc(perf))
     aucpr <- as.numeric(h2o::h2o.aucpr(perf))
-    mcc <- max(h2o::h2o.mcc(perf)[,2])
+    mcc <- max(h2o::h2o.mcc(perf)[,2], na.rm = TRUE)
     f1point5 <- h2otools::Fmeasure(perf, beta = 1.5, max=TRUE)
     f2 <- h2otools::Fmeasure(perf, beta = 2, max=TRUE) #max(h2o::h2o.F2(perf)[,2])
     f3 <- h2otools::Fmeasure(perf, beta = 3, max=TRUE)
@@ -80,9 +84,9 @@ evaluate <- function(id, newdata = NULL,
   }
 
   # sort the data
-  results <- as.data.frame(results)
+  #results <- as.data.frame(results)
   #results <- results[order(aucpr, auc, f2),]
-  results <- results[order(auc),]
+  results <- results[order(results$auc, decreasing = TRUE),]
 
   class(results) <- c("ensemble.eval", "data.frame")
   return(results)
