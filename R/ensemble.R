@@ -62,11 +62,13 @@ ensemble <- function(models,
                      model_selection_criteria = c("auc","aucpr","mcc","f2"),
                      top_rank = 0.05,
                      stop_rank = seq(0.01, 0.99, 0.01),
-                     stop_rounds = 10,
-                     stop_metric = "aucpr",
+                     stop_rounds = 3,
+                     reset_stop_rounds = TRUE,
+                     stop_metric = "auc",
                      loaded = TRUE,
                      path = NULL,
-                     seed = -1
+                     seed = -1,
+                     verbatim = TRUE
                      ) {
 
   modelTOP  <- NULL
@@ -86,6 +88,7 @@ ensemble <- function(models,
     }
   }
 
+
   # get the models' parameters from trained models:
   params <- h2o::h2o.getModel(ids[1])
   #nfolds <- params@parameters$nfolds
@@ -95,6 +98,7 @@ ensemble <- function(models,
   # STEP 1: Evaluate the models for various criteria
   # ============================================================
   modelEval <- evaluate(id = ids)
+  if (verbatim) message("\nmodels were successfully evaluated")
 
   # STEP 2A: Apply model selection criteria (TOP)
   # ============================================================
@@ -111,6 +115,7 @@ ensemble <- function(models,
                                     base_models = ids,
                                     seed = seed)
   }
+  if (verbatim) message("'top' strategy was successfully evaluated")
 
   # STEP 2B: Apply model selection criteria (STOP)
   # ============================================================
@@ -121,8 +126,10 @@ ensemble <- function(models,
     TOP       <- NULL
     STOP      <- 0
 
+    if (verbatim) message("'stop' strategy tuning:")
+
     for (i in stop_rank) {
-      while (STOP <= stop) {
+      while (STOP <= stop_rounds) {
         slctSTOP <- modelSelection(eval = modelEval, top = i)
 
         # train the ensemble and evaluate it
@@ -133,17 +140,15 @@ ensemble <- function(models,
                                          base_models = ids,
                                          seed = seed)
 
-        auc <- as.numeric(h2o::h2o.auc(stopModel))
-        aucpr <- as.numeric(h2o::h2o.aucpr(stopModel))
-        mcc <- max(h2o::h2o.mcc(stopModel)[,2])
-
         # evaluate the model for AUC
         # ------------------------------------------------------------
         if (stop_metric == "auc") {
+          auc <- as.numeric(h2o::h2o.auc(stopModel))
           if (AUC < auc) {
             AUC <- auc
             TOP <- i
             modelSTOP <- stopModel
+            if (reset_stop_rounds) STOP <- 0
           }
           else STOP <- STOP + 1
         }
@@ -151,10 +156,12 @@ ensemble <- function(models,
         # evaluate the model for AUCPR
         # ------------------------------------------------------------
         if (stop_metric == "aucpr") {
+          aucpr <- as.numeric(h2o::h2o.aucpr(stopModel))
           if (AUCPR < aucpr) {
             AUCPR <- aucpr
             TOP <- i
             modelSTOP <- stopModel
+            if (reset_stop_rounds) STOP <- 0
           }
           else STOP <- STOP + 1
         }
@@ -162,10 +169,12 @@ ensemble <- function(models,
         # evaluate the model for MCC
         # ------------------------------------------------------------
         if (stop_metric == "mcc") {
+          mcc <- max(h2o::h2o.mcc(stopModel)[,2])
           if (MCC < mcc) {
             MCC <- mcc
             TOP <- i
             modelSTOP <- stopModel
+            if (reset_stop_rounds) STOP <- 0
           }
           else STOP <- STOP + 1
         }
