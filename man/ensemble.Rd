@@ -9,21 +9,22 @@ ensemble(
   training_frame,
   strategy = c("top", "stop"),
   model_selection_criteria = c("auc", "aucpr", "mcc", "f2"),
+  max = NULL,
   top_rank = 0.05,
   stop_rank = seq(0.01, 0.99, 0.01),
-  stop_rounds = 10,
-  stop_metric = "aucpr",
+  stop_rounds = 3,
+  reset_stop_rounds = TRUE,
+  stop_metric = "auc",
   loaded = TRUE,
   path = NULL,
-  seed = -1
+  seed = -1,
+  verbatim = TRUE
 )
 }
 \arguments{
-\item{perf}{a h2o object of class \code{"H2OBinomialMetrics"} which is provided
-by 'h2o.performance' function.}
-
-\item{max}{logical. default is FALSE. if TRUE, instead of providing the F-Measure
-for all the thresholds, the highest F-Measure is reported.}
+\item{max}{integer. specifies maximum number of models for each criteria to be extracted. the
+default value is the \code{"top_rank"} percentage for each model selection
+criteria.}
 }
 \value{
 a matrix of F-Measures for different thresholds or the highest F-Measure value
@@ -69,7 +70,6 @@ ids <- c(h2o.ids(aml), h2o.ids(grid))
 ens <- ensemble(models = ids, training_frame = prostate)
 
 # evaluate the model performance of the best model
-perf <- h2o.performance(aml@leader, xval = TRUE)
 
 }
 }
