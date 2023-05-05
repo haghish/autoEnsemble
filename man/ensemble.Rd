@@ -7,24 +7,67 @@
 ensemble(
   models,
   training_frame,
-  strategy = c("top", "stop"),
+  newdata = NULL,
+  strategy = c("search"),
   model_selection_criteria = c("auc", "aucpr", "mcc", "f2"),
   max = NULL,
-  top_rank = 0.05,
-  stop_rank = seq(0.01, 0.99, 0.01),
+  top_rank = seq(0.01, 0.99, 0.01),
   stop_rounds = 3,
   reset_stop_rounds = TRUE,
   stop_metric = "auc",
-  loaded = TRUE,
-  path = NULL,
   seed = -1,
-  verbatim = TRUE
+  verbatim = FALSE
 )
 }
 \arguments{
+\item{models}{H2O search grid or AutoML grid or a character vector of H2O model IDs.
+the \code{"h2o.get_ids"} function from \code{"h2otools"} can
+retrieve the IDs from grids.}
+
+\item{training_frame}{h2o training frame (data.frame) for model training}
+
+\item{newdata}{h2o frame (data.frame). the data.frame must be already uploaded
+on h2o server (cloud). when specified, this dataset will be used
+for evaluating the models. if not specified, model performance
+on the training dataset will be reported.}
+
+\item{strategy}{character. the current available strategies are \code{"search"}
+(default) and \code{"top"}. The \code{"search"} strategy searches
+for the best combination of top-performing diverse models
+whereas the \code{"top"} strategy is more simplified and just
+combines the specified of top-performing diverse models without
+examining the possibility of improving the model by searching for
+larger number of models that can further improve the model. generally,
+the \code{"search"} strategy is preferable, unless the computation
+runtime is too large and optimization is not possible.}
+
+\item{model_selection_criteria}{character, specifying the performance metrics that
+should be taken into consideration for model selection. the default are
+\code{"c('auc', 'aucpr', 'mcc', 'f2')"}. other possible criteria are
+\code{"'f1point5', 'f3', 'f4', 'f5', 'kappa', 'mean_per_class_error', 'gini', 'accuracy'"},
+which are also provided by the \code{"evaluate"} function.}
+
 \item{max}{integer. specifies maximum number of models for each criteria to be extracted. the
 default value is the \code{"top_rank"} percentage for each model selection
 criteria.}
+
+\item{top_rank}{numeric vector. specifies percentage of the top models taht
+should be selected. if the strategy is \code{"search"}, the
+algorithm searches for the best best combination of the models
+from top ranked models to the bottom. however, if the strategy
+is \code{"top"}, only the first value of the vector is used
+(default value is top 1\%).}
+
+\item{stop_rounds}{integer. number of stoping rounds, in case the model stops
+improving}
+
+\item{stop_metric}{character. model stopping metric. the default is \code{"auc"},
+but \code{"aucpr"} and \code{"mcc"} are also available.}
+
+\item{seed}{random seed (recommended)}
+
+\item{verbatim}{logical. if TRUE, it reports additional information about the
+progress of the model training, particularly used for debugging.}
 }
 \value{
 a matrix of F-Measures for different thresholds or the highest F-Measure value
