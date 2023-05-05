@@ -4,37 +4,49 @@
 \alias{evaluate}
 \title{Evaluate H2O Model(s) Performance}
 \usage{
-evaluate(id, newdata = NULL, train = FALSE, valid = FALSE, xval = FALSE)
+evaluate(id, newdata = NULL, ...)
 }
 \arguments{
-\item{perf}{a h2o object of class \code{"H2OBinomialMetrics"} which is provided
-by 'h2o.performance' function.}
+\item{id}{a character vector of H2O model IDs retreived from H2O Grid search
+or AutoML random search. the \code{"h2o.get_ids"} function from
+\code{"h2otools"} can retreive the IDs from grids.}
 
-\item{max}{logical. default is FALSE. if TRUE, instead of providing the F-Measure
-for all the thresholds, the highest F-Measure is reported.}
+\item{newdata}{h2o frame (data.frame). the data.frame must be already uploaded
+on h2o server (cloud). when specified, this dataset will be used
+for evaluating the models. if not specified, model performance
+on the training dataset will be reported.}
+
+\item{...}{arguments to be passed to \code{"h2o.performance"} from H2O package}
 }
 \value{
-a matrix of F-Measures for different thresholds or the highest F-Measure value
+a data.frame of various model performance metrics for each model
 }
 \description{
-Multiple model performance metrics are computed
+Multiple model performance metrics are computed for each model
 }
 \examples{
 
 \dontrun{
 library(h2o)
+library(h2otools) #for h2o.get_ids() function
+library(ensemble)
+
+# initiate the H2O server to train a grid of models
 h2o.init(ignore_config = TRUE, nthreads = 2, bind_to_localhost = FALSE, insecure = TRUE)
+
+# Run a grid search or AutoML search
 prostate_path <- system.file("extdata", "prostate.csv", package = "h2o")
 prostate <- h2o.importFile(path = prostate_path, header = TRUE)
 y <- "CAPSULE"
 prostate[,y] <- as.factor(prostate[,y])  #convert to factor for classification
-aml <- h2o.automl(y = y, training_frame = prostate, max_runtime_secs = 30)
+aml <- h2o.automl(y = y, training_frame = prostate, max_runtime_secs = 30,
+                  seed = 2023, nfolds = 10, keep_cross_validation_predictions = TRUE)
 
-# evaluate the model performance
-perf <- h2o.performance(aml@leader, xval = TRUE)
+# get the model IDs from the H2O Grid search or H2O AutoML Grid
+ids <- h2otools::h2o.get_ids(aml)
 
-# evaluate F-Measure for a Beta = 3
-kappa(perf, max = TRUE)
+# evaluate all the models and return a dataframe
+evals <- evaluate(id = ids)
 }
 }
 \author{
