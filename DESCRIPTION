@@ -21,7 +21,7 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 Imports:
     h2o (>= 3.34.0.0),
-    h2otools,
+    h2otools (>= 0.3),
     curl (>= 4.3.0)
 RoxygenNote: 7.2.1
 URL: https://github.com/haghish/ensemble, https://www.sv.uio.no/psi/english/people/academic/haghish/
