@@ -52,7 +52,6 @@ modelSelection <- function(eval,
   if (family == "binary") {
     for (i in model_selection_criteria) {
       if (i != "mean_per_class_error") {
-        print(i)
         eval[,i] <- as.numeric(eval[,i])
         sub <- eval[order(eval[,i], decreasing = T), ]
         maxim <- sub[1, i]
