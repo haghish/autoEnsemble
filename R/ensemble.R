@@ -112,7 +112,7 @@
 #' h2o.auc(aml@leader)                          # best model identified by h2o.automl
 #' h2o.auc(h2o.getModel(grid@model_ids[[1]]))   # best model identified by grid search
 #' h2o.auc(top).                                # ensemble model with 'top' search strategy
-#' h2o.auc(search).                             # ensemble model with 'stop' search strategy
+#' h2o.auc(search).                             # ensemble model with 'search' search strategy
 #'
 #' }
 #' @export
