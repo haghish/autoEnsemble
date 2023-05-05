@@ -50,8 +50,7 @@ evaluate <- function(id, newdata = NULL, ...) {
   pb <- txtProgressBar(z, length(id), style = 3)
 
   for (i in id) {
-    model <- h2o::h2o.getModel(i)
-    perf <- h2o::h2o.performance(model = model, newdata = newdata, ...)
+    perf <- h2o::h2o.performance(model = h2o::h2o.getModel(i), newdata = newdata, ...)
 
     if (is.null(perf)) {
       if (xval) stop("cross-validation metrics failed. did you specify 'nfolds' correctly?")
