@@ -5,9 +5,9 @@
 #'             h2o.mean_per_class_error h2o.giniCoef h2o.accuracy
 #' @importFrom h2otools Fmeasure kappa
 #' @importFrom curl curl
-#' @param id a character vector of H2O model IDs retreived from H2O Grid search
+#' @param id a character vector of H2O model IDs retrieved from H2O Grid search
 #'           or AutoML random search. the \code{"h2o.get_ids"} function from
-#'           \code{"h2otools"} can retreive the IDs from grids.
+#'           \code{"h2otools"} can retrieve the IDs from grids.
 #' @param newdata h2o frame (data.frame). the data.frame must be already uploaded
 #'                on h2o server (cloud). when specified, this dataset will be used
 #'                for evaluating the models. if not specified, model performance
