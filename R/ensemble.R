@@ -98,26 +98,17 @@
 #' ### this is all that is needed before building the ensemble,
 #' ### i.e., to specify the model IDs that should be evaluated.
 #'
-#' ids <- c(h2o.get_ids(aml), h2o.get_ids(grid))
-#' ens <- ensemble(models = ids, training_frame = prostate)
+#' ids    <- c(h2o.get_ids(aml), h2o.get_ids(grid))
+#' top    <- ensemble(models = ids, training_frame = prostate, strategy = "top")
+#' search <- ensemble(models = ids, training_frame = prostate, strategy = "search")
 #'
 #' #######################################################
 #' ### EVALUATE THE MODELS
 #' #######################################################
-#'
-#' # evaluate the model performance of the best model
-#' top <- ensemble(models = ids, training_frame = prostate, strategy = "top")
-#' search <- ensemble(models = ids, training_frame = prostate, strategy = "search")
-#'
-#' # evaluate the model performance of the best model
-#' top_perf  <- h2o.performance(top)
-#' search_perf <- h2o.performance(search)
-#'
-#' # check the AUC of the two models
 #' h2o.auc(aml@leader)                          # best model identified by h2o.automl
-#' h2o.auc(h2o.getModel(grid@model_ids[[1]])).  # best model identified by grid search
-#' h2o.auc(top_perf)                            # ensemble model with 'top' search strategy
-#' h2o.auc(stop_perf)                           # ensemble model with 'stop' search strategy
+#' h2o.auc(h2o.getModel(grid@model_ids[[1]]))   # best model identified by grid search
+#' h2o.auc(top).                                # ensemble model with 'top' search strategy
+#' h2o.auc(search).                             # ensemble model with 'stop' search strategy
 #'
 #' }
 #' @export
