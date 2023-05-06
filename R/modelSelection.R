@@ -23,7 +23,7 @@
 #' \dontrun{
 #' library(h2o)
 #' library(h2otools) #for h2o.get_ids() function
-#' library(ensemble)
+#' library(h2oEnsemble)
 #'
 #' # initiate the H2O server to train a grid of models
 #' h2o.init(ignore_config = TRUE, nthreads = 2, bind_to_localhost = FALSE, insecure = TRUE)

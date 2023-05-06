@@ -1,6 +1,6 @@
 <a href="https://github.com/haghish/ensemble"><img src='man/figures/logo.PNG' align="right" height="200" /></a>
   
-  `ensemble` : An AutoML Algorithm for Building Homogeneous and Heterogeneous Stacked Ensemble Models by Searching for Diverse Base-Learners
+  `h2oEnsemble` : An AutoML Algorithm for Building Homogeneous and Heterogeneous Stacked Ensemble Models by Searching for Diverse Base-Learners
 ==========================================================================================================================================
   
   Building a successfult stacked ensemble models is based on two principles:
@@ -24,7 +24,7 @@ What makes these strategies destinct is the procedure of _model evaluation and s
 # load the required libraries for building the base-learners and the ensemble models
 library(h2o)
 library(h2otools)
-library(ensemble)
+library(h2oEnsemble)
 
 # initiate the h2o server
 h2o.init(ignore_config = TRUE, nthreads = 2, bind_to_localhost = FALSE, insecure = TRUE)

@@ -1,4 +1,4 @@
-Package: ensemble
+Package: h2oEnsemble
 Type: Package
 Title: An AutoML Algorithm for Building Homogeneous or Heterogeneous Stacked 
        Ensemble Models by Searching for Diverse Base-Learners
