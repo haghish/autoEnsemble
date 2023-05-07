@@ -56,7 +56,7 @@
 #' # load the required libraries for building the base-learners and the ensemble models
 #' library(h2o)
 #' library(h2otools)
-#' library(h2oEnsemble)
+#' library(autoEnsemble)
 #'
 #' # initiate the h2o server
 #' h2o.init(ignore_config = TRUE, nthreads = 2, bind_to_localhost = FALSE, insecure = TRUE)
