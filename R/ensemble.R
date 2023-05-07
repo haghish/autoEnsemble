@@ -3,7 +3,7 @@
 #' @importFrom utils setTxtProgressBar txtProgressBar
 #' @importFrom h2o h2o.stackedEnsemble h2o.getModel h2o.auc h2o.aucpr h2o.mcc
 #'             h2o.F2 h2o.mean_per_class_error h2o.giniCoef h2o.accuracy
-#' @importFrom h2otools h2o.get_ids
+# @importFrom h2otools h2o.get_ids
 #' @importFrom curl curl
 #' @param models H2O search grid or AutoML grid or a character vector of H2O model IDs.
 #'               the \code{"h2o.get_ids"} function from \code{"h2otools"} can
@@ -55,7 +55,7 @@
 #' \dontrun{
 #' # load the required libraries for building the base-learners and the ensemble models
 #' library(h2o)
-#' library(h2otools)
+# library(h2otools)
 #' library(autoEnsemble)
 #'
 #' # initiate the h2o server

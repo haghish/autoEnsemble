@@ -87,7 +87,6 @@ Multiple model performance metrics are computed
 \dontrun{
 # load the required libraries for building the base-learners and the ensemble models
 library(h2o)
-library(h2otools)
 library(autoEnsemble)
 
 # initiate the h2o server
