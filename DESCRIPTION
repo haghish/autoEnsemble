@@ -1,7 +1,6 @@
 Package: autoEnsemble
 Type: Package
-Title: An AutoML Algorithm for Building Homogeneous or Heterogeneous Stacked 
-       Ensemble Models by Searching for Diverse Base-Learners
+Title: Automated Stacked Ensemble Classifier for Severe Class Imbalance
 Version: 0.2
 Authors@R: 
     person("E. F. Haghish",
@@ -9,14 +8,13 @@ Authors@R:
            email = "haghish@uio.no")
 Depends: 
     R (>= 3.5.0),
-Description: An automated machine learning algorithm (AutoML) is designed to 
-             create homogeneous or heterogeneous stacked ensemble models from 
-             the given base-learners. In doing so, different criteria are used 
-             to identify the best models, which increase the diversity among the 
-             selected models, leading to stronger stacked ensemble models. next, 
-             the model is optimized for a combination of diverse models, gradually
-             increasing in including number of top-performing models. Currently, only 
-             'h2o.ai' models are supported.
+Description: An AutoML algorithm is developed to construct homogeneous or 
+             heterogeneous stacked ensemble models using specified base-learners. 
+             Various criteria are employed to identify optimal models, enhancing 
+             diversity among them and resulting in more robust stacked ensembles. 
+             The algorithm optimizes the model by incorporating an increasing 
+             number of top-performing models to create a diverse combination. 
+             Presently, only models from 'h2o.ai' are supported.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Imports:
