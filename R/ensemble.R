@@ -32,6 +32,8 @@
 #'        \code{"c('auc', 'aucpr', 'mcc', 'f2')"}. other possible criteria are
 #'        \code{"'f1point5', 'f3', 'f4', 'f5', 'kappa', 'mean_per_class_error', 'gini', 'accuracy'"},
 #'        which are also provided by the \code{"evaluate"} function.
+#' @param min_improvement numeric. specifies the minimum improvement in model
+#'                        evaluation metric to qualify further optimization search.
 #' @param top_rank numeric vector. specifies percentage of the top models taht
 #'                 should be selected. if the strategy is \code{"search"}, the
 #'                 algorithm searches for the best best combination of the models
@@ -123,6 +125,7 @@ ensemble <- function(models,
                      family = "binary",
                      strategy = c("search"),
                      model_selection_criteria = c("auc","aucpr","mcc","f2"),
+                     min_improvement = 0.00001,
                      max = NULL,
                      top_rank = seq(0.01, 0.99, 0.01),
                      stop_rounds = 3,
@@ -186,12 +189,13 @@ ensemble <- function(models,
   # STEP 3: Apply model selection criteria (SEARCH)
   # ============================================================
   if ("search" %in% strategy) {
-    AUC       <- 0
-    AUCPR     <- 0
-    MCC       <- 0
-    TOP       <- NULL
-    STOP      <- 0
-    N         <- 0
+    N     <- 0 #number of selected models at each search round
+    STOP  <- 0 #current number of stopping criteria
+    df    <- NULL
+    auc   <- NULL
+    aucpr <- NULL
+    mcc   <- NULL
+    round <- 0
 
     if (verbatim) message("'search' strategy tuning:")
 
@@ -205,8 +209,8 @@ ensemble <- function(models,
         # if the number of models has increased, proceed
         # ============================================================
         if (length(slctSTOP) > N) {
-
           N <- length(slctSTOP) #memorize the number of selected models
+          round <- round + 1    #memorize the current round of adding models
 
           # train the ensemble and evaluate it
           stopModel <- h2o.stackedEnsemble(x = x,
@@ -216,44 +220,36 @@ ensemble <- function(models,
                                            base_models = ids,
                                            seed = seed)
 
-          # evaluate the model for AUC
+          # prepare the evaluation data.frame
           # ----------------------------------------------------------
-          if (stop_metric == "auc") {
-            auc <- as.numeric(h2o::h2o.auc(stopModel))
-            if (AUC < auc) {
-              AUC <- auc
-              TOP <- i
-              model <- stopModel
-              if (reset_stop_rounds) STOP <- 0
-            }
-            else STOP <- STOP + 1
+          for (j in stop_metric) {
+            if ("auc" %in% stop_metric)     auc <- as.numeric(h2o::h2o.auc(stopModel))
+            if ("aucpr" %in% stop_metric) aucpr <- as.numeric(h2o::h2o.aucpr(stopModel))
+            if ("mcc" %in% stop_metric)     mcc <- max(h2o::h2o.mcc(stopModel)[,2])
+
+            #sort(c("auc","aucpr","mcc"))
+            temp <- data.frame(metric = sort(stop_metric),
+                               round = rep(round, length(stop_metric)),
+                               val = c(auc, aucpr, mcc))
+            df <- cbind(df, temp)
           }
 
-          # evaluate the model for AUCPR
+          # evaluate the stopping criteria from the second round forth
           # ----------------------------------------------------------
-          if (stop_metric == "aucpr") {
-            aucpr <- as.numeric(h2o::h2o.aucpr(stopModel))
-            if (AUCPR < aucpr) {
-              AUCPR <- aucpr
-              TOP <- i
-              model <- stopModel
-              if (reset_stop_rounds) STOP <- 0
-            }
-            else STOP <- STOP + 1
-          }
+          if (round > 1) {
+            sc <- stopping_criteria(df = df,
+                                    round = round,
+                                    stop = STOP,
+                                    min_improvement = min_improvement,
+                                    stop_rounds = stop_rounds,
+                                    reset_stop_rounds = reset_stop_rounds,
+                                    stop_metric = stop_metric)
 
-          # evaluate the model for MCC
-          # ----------------------------------------------------------
-          if (stop_metric == "mcc") {
-            mcc <- max(h2o::h2o.mcc(stopModel)[,2])
-            if (MCC < mcc) {
-              MCC <- mcc
-              TOP <- i
-              model <- stopModel
-              if (reset_stop_rounds) STOP <- 0
-            }
-            else STOP <- STOP + 1
+            STOP <- sc$STOP
+            if (sc$improved) model <- stopModel
           }
+          else model <- stopModel #update the model on the first round
+
         }
       }
 
