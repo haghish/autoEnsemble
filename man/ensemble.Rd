@@ -11,6 +11,7 @@ ensemble(
   family = "binary",
   strategy = c("search"),
   model_selection_criteria = c("auc", "aucpr", "mcc", "f2"),
+  min_improvement = 1e-05,
   max = NULL,
   top_rank = seq(0.01, 0.99, 0.01),
   stop_rounds = 3,
@@ -50,6 +51,9 @@ should be taken into consideration for model selection. the default are
 \code{"c('auc', 'aucpr', 'mcc', 'f2')"}. other possible criteria are
 \code{"'f1point5', 'f3', 'f4', 'f5', 'kappa', 'mean_per_class_error', 'gini', 'accuracy'"},
 which are also provided by the \code{"evaluate"} function.}
+
+\item{min_improvement}{numeric. specifies the minimum improvement in model
+evaluation metric to qualify further optimization search.}
 
 \item{max}{integer. specifies maximum number of models for each criteria to be extracted. the
 default value is the \code{"top_rank"} percentage for each model selection

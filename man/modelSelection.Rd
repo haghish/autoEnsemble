@@ -64,7 +64,7 @@ ids <- h2otools::h2o.get_ids(aml)
 evals <- evaluate(id = ids)
 
 # perform model selection (up to top 10\% of each criteria)
-select <- modelSelection(eval = evals, top_rank = 0.1, max = round(top_rank*nrow(evals)))
+select <- modelSelection(eval = evals, top_rank = 0.1))
 }
 }
 \author{
