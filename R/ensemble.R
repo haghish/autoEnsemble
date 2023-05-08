@@ -191,6 +191,7 @@ ensemble <- function(models,
     MCC       <- 0
     TOP       <- NULL
     STOP      <- 0
+    N         <- 0
 
     if (verbatim) message("'search' strategy tuning:")
 
@@ -201,51 +202,58 @@ ensemble <- function(models,
                                    top_rank = i,
                                    model_selection_criteria = model_selection_criteria)
 
-        # train the ensemble and evaluate it
-        stopModel <- h2o.stackedEnsemble(x = x,
-                                         y = y,
-                                         training_frame = training_frame,
-                                         model_id = paste0("stop_",i),
-                                         base_models = ids,
-                                         seed = seed)
+        # if the number of models has increased, proceed
+        # ============================================================
+        if (length(slctSTOP) > N) {
 
-        # evaluate the model for AUC
-        # ------------------------------------------------------------
-        if (stop_metric == "auc") {
-          auc <- as.numeric(h2o::h2o.auc(stopModel))
-          if (AUC < auc) {
-            AUC <- auc
-            TOP <- i
-            model <- stopModel
-            if (reset_stop_rounds) STOP <- 0
-          }
-          else STOP <- STOP + 1
-        }
+          N <- length(slctSTOP) #memorize the number of selected models
 
-        # evaluate the model for AUCPR
-        # ------------------------------------------------------------
-        if (stop_metric == "aucpr") {
-          aucpr <- as.numeric(h2o::h2o.aucpr(stopModel))
-          if (AUCPR < aucpr) {
-            AUCPR <- aucpr
-            TOP <- i
-            model <- stopModel
-            if (reset_stop_rounds) STOP <- 0
-          }
-          else STOP <- STOP + 1
-        }
+          # train the ensemble and evaluate it
+          stopModel <- h2o.stackedEnsemble(x = x,
+                                           y = y,
+                                           training_frame = training_frame,
+                                           model_id = paste0("stop_",i),
+                                           base_models = ids,
+                                           seed = seed)
 
-        # evaluate the model for MCC
-        # ------------------------------------------------------------
-        if (stop_metric == "mcc") {
-          mcc <- max(h2o::h2o.mcc(stopModel)[,2])
-          if (MCC < mcc) {
-            MCC <- mcc
-            TOP <- i
-            model <- stopModel
-            if (reset_stop_rounds) STOP <- 0
+          # evaluate the model for AUC
+          # ----------------------------------------------------------
+          if (stop_metric == "auc") {
+            auc <- as.numeric(h2o::h2o.auc(stopModel))
+            if (AUC < auc) {
+              AUC <- auc
+              TOP <- i
+              model <- stopModel
+              if (reset_stop_rounds) STOP <- 0
+            }
+            else STOP <- STOP + 1
           }
-          else STOP <- STOP + 1
+
+          # evaluate the model for AUCPR
+          # ----------------------------------------------------------
+          if (stop_metric == "aucpr") {
+            aucpr <- as.numeric(h2o::h2o.aucpr(stopModel))
+            if (AUCPR < aucpr) {
+              AUCPR <- aucpr
+              TOP <- i
+              model <- stopModel
+              if (reset_stop_rounds) STOP <- 0
+            }
+            else STOP <- STOP + 1
+          }
+
+          # evaluate the model for MCC
+          # ----------------------------------------------------------
+          if (stop_metric == "mcc") {
+            mcc <- max(h2o::h2o.mcc(stopModel)[,2])
+            if (MCC < mcc) {
+              MCC <- mcc
+              TOP <- i
+              model <- stopModel
+              if (reset_stop_rounds) STOP <- 0
+            }
+            else STOP <- STOP + 1
+          }
         }
       }
 
