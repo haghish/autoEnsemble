@@ -24,6 +24,7 @@ stopping_criteria <- function(df,
                               stop_metric = "auc") {
 
   IMPROVED  <- FALSE
+  STOP      <- stop
 
   # if there is only one stopping criterion, stop the search
   #    when the 'stop_rounds' are reached without any improvement
@@ -32,16 +33,16 @@ stopping_criteria <- function(df,
   #    for any of the criterion
   # ----------------------------------------------------------
   for (i in stop_metric) {
-    if (df[round, i] > (df[round, i-1]+ min_improvement)) IMPROVED <- TRUE
+    tmp <- df[df$metric == i & df$round >= round - 1, ]
+    if (tmp[2, "val"] > (tmp[1, "val"]+ min_improvement)) IMPROVED <- TRUE
   }
 
   # evaluate stopping criteria
   # ----------------------------------------------------------
   if (IMPROVED & reset_stop_rounds) STOP <- 0
-  else if (!IMPROVED) STOP <- STOP + 1
-
-  return(list(stop = STOP,
+  else if (IMPROVED) STOP <- stop
+  else if (!IMPROVED) STOP <- stop + 1
+  return(list(current_stop_round = STOP,
               improved = IMPROVED))
 }
-
 
