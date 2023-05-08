@@ -43,7 +43,7 @@ prostate <- h2o.importFile(path = prostate_path, header = TRUE)
 # run AutoML to tune various models (GLM, GBM, XGBoost, DRF, DeepLearning) for 120 seconds
 y <- "CAPSULE"
 prostate[,y] <- as.factor(prostate[,y])  #convert to factor for classification
-aml <- h2o.automl(y = y, training_frame = prostate, max_runtime_secs = 120, 
+aml <- h2o.automl(y = y, training_frame = prostate, max_runtime_secs = 30, 
                   include_algos=c("DRF","GLM", "XGBoost", "GBM", "DeepLearning"),
                   
                   # this setting ensures the models are comparable for building a meta learner
@@ -55,7 +55,7 @@ aml <- h2o.automl(y = y, training_frame = prostate, max_runtime_secs = 120,
 #######################################################
 # make sure equal number of "nfolds" is specified for different grids
 grid <- h2o.grid(algorithm = "gbm", y = y, training_frame = prostate,
-                 hyper_params = list(ntrees = seq(1,50,1)), grid_id = "ensemble_grid",
+                 hyper_params = list(ntrees = seq(1,25,1)), grid_id = "ensemble_grid",
                  
                  # this setting ensures the models are comparable for building a meta learner
                  seed = 2023, fold_assignment = "Modulo", nfolds = 10, 
