@@ -183,12 +183,16 @@ ensemble <- function(models,
                                  model_id = "top",
                                  base_models = ids,
                                  seed = seed)
+
+    if (verbatim) message("'top' strategy was successfully evaluated")
   }
-  if (verbatim) message("'top' strategy was successfully evaluated")
 
   # STEP 3: Apply model selection criteria (SEARCH)
   # ============================================================
   if ("search" %in% strategy) {
+    # NOTE: allow building a meta learner with a single model, ensuring that adding
+    #       more models to the ensemble does not reduce the performance of the model!
+    #       thus, N is set to 0, that is, any N value above 0 is acceptable
     N     <- 0 #number of selected models at each search round
     STOP  <- 0 #current number of stopping criteria
     df    <- NULL
@@ -200,7 +204,8 @@ ensemble <- function(models,
     if (verbatim) message("'search' strategy tuning:")
 
     for (i in top_rank) {
-      while (STOP <= stop_rounds) {
+      if (STOP <= stop_rounds) {
+
         slctSTOP <- modelSelection(eval = modelEval,
                                    max = max,
                                    top_rank = i,
@@ -245,15 +250,14 @@ ensemble <- function(models,
                                     reset_stop_rounds = reset_stop_rounds,
                                     stop_metric = stop_metric)
 
-            STOP <- sc$STOP
+            STOP <- sc$current_stop_round
             if (sc$improved) model <- stopModel
           }
           else model <- stopModel #update the model on the first round
 
         }
       }
-
-      break
+      else break
     }
   }
 
