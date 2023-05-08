@@ -231,7 +231,7 @@ ensemble <- function(models,
             temp <- data.frame(metric = sort(stop_metric),
                                round = rep(round, length(stop_metric)),
                                val = c(auc, aucpr, mcc))
-            df <- cbind(df, temp)
+            df <- rbind(df, temp)
           }
 
           # evaluate the stopping criteria from the second round forth
