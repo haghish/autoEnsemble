@@ -3,6 +3,8 @@
   `autoEnsemble` : An AutoML Algorithm for Building Homogeneous and Heterogeneous Stacked Ensemble Models by Searching for Diverse Base-Learners
 ==========================================================================================================================================
 
+[![CRAN version](http://www.r-pkg.org/badges/version/autoEnsemble?color=2eb8b3)](https://cran.r-project.org/package=autoEnsemble)  [![](https://cranlogs.r-pkg.org/badges/grand-total/autoEnsemble?color=a958d1)](https://cran.r-project.org/package=autoEnsemble) [![](man/figures/manual.svg)](https://CRAN.R-project.org/package=autoEnsemble)
+
 The `autoEnsemble` R package present an AutoML algorithm for building stacked ensemble of classifiers, that are particularly powerful for severely imbalanced outcomes. Building a successfult stacked ensemble models is based on two principles:
   
 1. The base-learners are more accurate than a chance prediction. The more accurate the base-learners, the stronger the stacked ensemble
