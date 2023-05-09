@@ -81,7 +81,8 @@ but \code{"aucpr"} and \code{"mcc"} are also available.}
 progress of the model training, particularly used for debugging.}
 }
 \value{
-a matrix of F-Measures for different thresholds or the highest F-Measure value
+a list including the ensemble model and the top-rank models that were
+        used in the model
 }
 \description{
 Multiple model performance metrics are computed
