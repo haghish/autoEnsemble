@@ -49,8 +49,7 @@
 #' @param seed random seed (recommended)
 #' @param verbatim logical. if TRUE, it reports additional information about the
 #'                 progress of the model training, particularly used for debugging.
-#' @return a list including the ensemble model and the top-rank models that were
-#'         used in the model
+#' @return a matrix of F-Measures for different thresholds or the highest F-Measure value
 #' @author E. F. Haghish
 #'
 #' @examples
@@ -201,7 +200,6 @@ ensemble <- function(models,
     aucpr <- NULL
     mcc   <- NULL
     round <- 0
-    top_rank_id <- NULL
 
     if (verbatim) message("'search' strategy tuning:")
 
@@ -253,15 +251,9 @@ ensemble <- function(models,
                                     stop_metric = stop_metric)
 
             STOP <- sc$current_stop_round
-            if (sc$improved) {
-              model <- stopModel
-              top_rank_id <- slctSTOP
-            }
+            if (sc$improved) model <- stopModel
           }
-          else {
-            model <- stopModel #update the model on the first round
-            top_rank_id <- slctSTOP
-          }
+          else model <- stopModel #update the model on the first round
 
         }
       }
@@ -269,7 +261,6 @@ ensemble <- function(models,
     }
   }
 
-  return(list(model = model,
-              top_rank_id = top_rank_id))
+  return(model)
 }
 
