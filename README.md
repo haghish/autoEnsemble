@@ -1,4 +1,4 @@
-<a href="https://github.com/haghish/autoEnsemble"><img src='man/figures/logo_noname.PNG' align="right" height="200" /></a>
+<a href="https://github.com/haghish/autoEnsemble"><img src='man/figures/logo_noname.png' align="right" height="200" /></a>
   
   `autoEnsemble` : An AutoML Algorithm for Building Homogeneous and Heterogeneous Stacked Ensemble Models by Searching for Diverse Base-Learners
 ==========================================================================================================================================
