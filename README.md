@@ -10,7 +10,7 @@ The `autoEnsemble` R package present an AutoML algorithm for building stacked en
 1. The base-learners are more accurate than a chance prediction. The more accurate the base-learners, the stronger the stacked ensemble
 2. The base-learners are diverse, i.e., their error is not correlated. 
 
-While the first principle is easy to assess with straight-forward model evaluation criteria, searching for _diverse excellent models_ is not that easy, particularly under severe class imbalance problem. The **`autoEnsemble`** R package implements an auomated machine learning algorithm that identifies excellent - yet destinct - models and stacks them to build an excellent stacked ensemble model. Currently, 2 strategies are programmed, __top__ and __search__:
+While the first principle is easy to assess with straight-forward model evaluation criteria, searching for _diverse excellent models_ is not that easy, particularly under severe class imbalance problem. The **`autoEnsemble`** R package implements an automated machine learning algorithm that identifies excellent - yet destinct - models and stacks them to build an excellent stacked ensemble model. Currently, 2 strategies are programmed, __top__ and __search__:
 
 Strategy    | Description
 ----------- | -----------
