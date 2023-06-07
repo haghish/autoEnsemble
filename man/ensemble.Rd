@@ -2,7 +2,7 @@
 % Please edit documentation in R/ensemble.R
 \name{ensemble}
 \alias{ensemble}
-\title{Evaluate H2O Model(s) Performance}
+\title{Builds Stacked Ensemble Model from H2O Models}
 \usage{
 ensemble(
   models,
@@ -85,7 +85,7 @@ a list including the ensemble model and the top-rank models that were
         used in the model
 }
 \description{
-Multiple model performance metrics are computed
+Multiple trained H2O models are stacked to create an ensemble
 }
 \examples{
 
@@ -147,8 +147,8 @@ search <- ensemble(models = ids, training_frame = prostate, strategy = "search")
 #######################################################
 h2o.auc(aml@leader)                          # best model identified by h2o.automl
 h2o.auc(h2o.getModel(grid@model_ids[[1]]))   # best model identified by grid search
-h2o.auc(top).                                # ensemble model with 'top' search strategy
-h2o.auc(search).                             # ensemble model with 'search' search strategy
+h2o.auc(top$model).                          # ensemble model with 'top' search strategy
+h2o.auc(search$model).                       # ensemble model with 'search' search strategy
 
 }
 }
