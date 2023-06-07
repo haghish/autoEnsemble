@@ -1,5 +1,5 @@
-#' @title Evaluate H2O Model(s) Performance
-#' @description Multiple model performance metrics are computed
+#' @title Builds Stacked Ensemble Model from H2O Models
+#' @description Multiple trained H2O models are stacked to create an ensemble
 #' @importFrom utils setTxtProgressBar txtProgressBar
 #' @importFrom h2o h2o.stackedEnsemble h2o.getModel h2o.auc h2o.aucpr h2o.mcc
 #'             h2o.F2 h2o.mean_per_class_error h2o.giniCoef h2o.accuracy
