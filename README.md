@@ -85,5 +85,5 @@ h2o.auc(h2o.getModel(grid@model_ids[[1]]))   # best model identified by grid sea
 h2o.auc(top$model)                           # ensemble model with 'top' strategy
 h2o.auc(search$model)                        # ensemble model with 'search' strategy
 
-# > both 'top' and 'search' strategies had identical results, but out perform the grid search and AutoML search. Yet, this was a small dataset, and a quick test... 
+# > both 'top' and 'search' strategies had identical results, but outperform the grid search and AutoML search. Yet, this was a small dataset, and a quick test... 
 ```
