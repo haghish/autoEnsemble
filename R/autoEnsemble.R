@@ -223,6 +223,11 @@ autoEnsemble <- function(
   # STEP 3: store the models
   # ============================================================
   if (save_models) {
+
+    dir.create(directory)
+    dir.create(paste0(directory,"/baselearners"))
+    dir.create(paste0(directory,"/autoEnsemble"))
+
     for (i in ids) {
       h2o.saveModel(h2o.getModel(i), path = paste0(directory,"/baselearners"), force = T, export_cross_validation_predictions = T)
     }
