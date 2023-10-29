@@ -42,7 +42,7 @@
 #'                 (default value is top 1\%).
 #' @param stop_rounds integer. number of stoping rounds, in case the model stops
 #'                    improving
-#' @param reset_stop_rounds logical. if TRUE, everytime the model improves the
+#' @param reset_stop_rounds logical. if TRUE, every time the model improves the
 #'                          stopping rounds penalty is resets to 0.
 #' @param stop_metric character. model stopping metric. the default is \code{"auc"},
 #'                    but \code{"aucpr"} and \code{"mcc"} are also available.
@@ -140,6 +140,7 @@ ensemble <- function(models,
 
   modelTOP  <- NULL
   modelSTOP <- NULL
+  top_rank_id <- NULL
 
   if (family != "binary") stop("currently only 'binary' classification models are supported")
 
@@ -201,7 +202,6 @@ ensemble <- function(models,
     aucpr <- NULL
     mcc   <- NULL
     round <- 0
-    top_rank_id <- NULL
 
     if (verbatim) message("'search' strategy tuning:")
 

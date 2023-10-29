@@ -69,7 +69,7 @@ is \code{"top"}, only the first value of the vector is used
 \item{stop_rounds}{integer. number of stoping rounds, in case the model stops
 improving}
 
-\item{reset_stop_rounds}{logical. if TRUE, everytime the model improves the
+\item{reset_stop_rounds}{logical. if TRUE, every time the model improves the
 stopping rounds penalty is resets to 0.}
 
 \item{stop_metric}{character. model stopping metric. the default is \code{"auc"},
