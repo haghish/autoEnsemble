@@ -123,7 +123,7 @@
 shap <- function(models,
                  training_frame,
                  newdata = NULL,
-                 sample_size = 100,
+                 sample_size = 100
                  # family = "binary",
                  # strategy = c("search"),
                  # model_selection_criteria = c("auc","aucpr","mcc","f2"),
