@@ -172,10 +172,11 @@ ensemble <- function(models,
   # STEP 2: Apply model selection criteria (TOP)
   # ============================================================
   if ("top" %in% strategy) {
-    slctTOP <- modelSelection(eval = modelEval,
-                              max = max,
-                              top_rank = top_rank[1],
-                              model_selection_criteria = model_selection_criteria)
+    top_rank_id <- modelSelection(eval = modelEval,
+                               max = max,
+                               top_rank = top_rank[1],
+                               model_selection_criteria = model_selection_criteria)
+
 
     # train the ensemble
     # ----------------------------------------------------------
@@ -183,7 +184,7 @@ ensemble <- function(models,
                                  y = y,
                                  training_frame = training_frame,
                                  model_id = "top",
-                                 base_models = ids,
+                                 base_models = top_rank_id,
                                  seed = seed)
 
     if (verbatim) message("'top' strategy was successfully evaluated")
@@ -207,16 +208,15 @@ ensemble <- function(models,
 
     for (i in top_rank) {
       if (STOP <= stop_rounds) {
-
-        slctSTOP <- modelSelection(eval = modelEval,
+        select <- modelSelection(eval = modelEval,
                                    max = max,
                                    top_rank = i,
                                    model_selection_criteria = model_selection_criteria)
 
         # if the number of models has increased, proceed
         # ============================================================
-        if (length(slctSTOP) > N) {
-          N <- length(slctSTOP) #memorize the number of selected models
+        if (length(select) > N) {
+          N <- length(select)   #memorize the number of selected models
           round <- round + 1    #memorize the current round of adding models
 
           # train the ensemble and evaluate it
@@ -224,7 +224,7 @@ ensemble <- function(models,
                                            y = y,
                                            training_frame = training_frame,
                                            model_id = paste0("stop_",i),
-                                           base_models = ids,
+                                           base_models = select,
                                            seed = seed)
 
           # prepare the evaluation data.frame
@@ -253,14 +253,15 @@ ensemble <- function(models,
                                     stop_metric = stop_metric)
 
             STOP <- sc$current_stop_round
+
             if (sc$improved) {
               model <- stopModel
-              top_rank_id <- slctSTOP
+              top_rank_id <- select
             }
           }
           else {
             model <- stopModel #update the model on the first round
-            top_rank_id <- slctSTOP
+            top_rank_id <- select
           }
 
         }
@@ -272,4 +273,5 @@ ensemble <- function(models,
   return(list(model = model,
               top_rank_id = top_rank_id))
 }
+
 
