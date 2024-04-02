@@ -220,6 +220,8 @@ autoEnsemble <- function(
                      verbatim = verbatim,
                      seed = seed)
 
+  class(ens) <- c("autoEnsemble", "list")
+
   # STEP 3: store the models
   # ============================================================
   if (save_models) {
@@ -237,6 +239,7 @@ autoEnsemble <- function(
 
   # STEP 4: return the stacked ensemble model
   # ============================================================
+
   return(ens)
 
 }

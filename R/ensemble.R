@@ -270,8 +270,12 @@ ensemble <- function(models,
     }
   }
 
-  return(list(model = model,
-              top_rank_id = top_rank_id))
+  obj <- list(model = model,
+              top_rank_id = top_rank_id)
+
+  class(obj) <- c("autoEnsemble", "list")
+
+  return(obj)
 }
 
 
