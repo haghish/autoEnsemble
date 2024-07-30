@@ -1,5 +1,3 @@
-> __This document is updated for the _DEVELOPMENTAL_ version of `autoEnsemble` and might _NOT WORK_ if you install the software from CRAN archive. For CRAN installation, follow the examples of the package vignette__
-
 <a href="https://github.com/haghish/autoEnsemble"><img src='man/figures/logo_noname.png' align="right" height="200" /></a>
   
   `autoEnsemble` : An AutoML Algorithm for Building Homogeneous and Heterogeneous Stacked Ensemble Models by Searching for Diverse Base-Learners
