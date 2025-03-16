@@ -146,7 +146,7 @@ ensemble <- function(models,
 
   # STEP 0: prepare the models
   # ============================================================
-  if (inherits(models,"H2OAutoML") | inherits(models,"H2OAutoML")) {
+  if (inherits(models,"H2OAutoML") | inherits(models,"H2OGrid")) {
     ids <- h2o.get_ids(models)
   }
   else if (inherits(models,"character")) {
