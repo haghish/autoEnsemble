@@ -4,13 +4,16 @@
 #' @importFrom utils setTxtProgressBar txtProgressBar
 #' @importFrom h2o h2o.stackedEnsemble h2o.getModel h2o.auc h2o.aucpr h2o.mcc
 #'             h2o.F2 h2o.mean_per_class_error h2o.giniCoef h2o.accuracy h2o.automl
-#'             h2o.init
-# @importFrom h2otools h2o.get_ids
+#'             h2o.init h2o.saveModel
 #' @importFrom curl curl
-#' @param models H2O search grid or AutoML grid or a character vector of H2O model IDs.
-#'               the \code{"h2o.get_ids"} function from \code{"h2otools"} can
-#'               retrieve the IDs from grids.
-#' @param training_frame h2o training frame (data.frame) for model training
+#' @param include_algos Vector of character strings naming the algorithms to
+#'                      restrict to during the model-building phase. this argument
+#'                      is passed to autoML.
+#' @param x          Vector. Predictor column names or indices.
+#' @param y          Character. The response column name or index.
+#' @param training_frame An H2OFrame containing the training data.
+#'                   Default is \code{h2o.getFrame("hmda.train.hex")}.
+#' @param validation_frame An H2OFrame for early stopping. Default is \code{NULL}.
 #' @param newdata h2o frame (data.frame). the data.frame must be already uploaded
 #'                on h2o server (cloud). when specified, this dataset will be used
 #'                for evaluating the models. if not specified, model performance
@@ -29,6 +32,7 @@
 #' @param max integer. specifies maximum number of models for each criteria to be extracted. the
 #'            default value is the \code{"top_rank"} percentage for each model selection
 #'            criteria.
+#' @param max_models Maximum number of models to build in the AutoML training (passed to autoML)
 #' @param model_selection_criteria character, specifying the performance metrics that
 #'        should be taken into consideration for model selection. the default are
 #'        \code{"c('auc', 'aucpr', 'mcc', 'f2')"}. other possible criteria are
@@ -36,6 +40,10 @@
 #'        which are also provided by the \code{"evaluate"} function.
 #' @param min_improvement numeric. specifies the minimum improvement in model
 #'                        evaluation metric to qualify further optimization search.
+#' @param max_runtime_secs_per_model Maximum runtime in seconds dedicated to each
+#'                                   individual model training process.
+#' @param max_runtime_secs Integer. This argument specifies the maximum time that
+#'                         the AutoML process will run for in seconds.
 #' @param top_rank numeric vector. specifies percentage of the top models taht
 #'                 should be selected. if the strategy is \code{"search"}, the
 #'                 algorithm searches for the best best combination of the models
@@ -48,9 +56,32 @@
 #'                          stopping rounds penalty is resets to 0.
 #' @param stop_metric character. model stopping metric. the default is \code{"auc"},
 #'                    but \code{"aucpr"} and \code{"mcc"} are also available.
+#' @param nfolds     Integer. Number of folds for cross-validation.
+#'                   Default is 10.
+#' @param balance_classes Logical. Specify whether to oversample the minority
+#'                        classes to balance the class distribution; only applicable to classification
+#' @param save_models Logical. if TRUE, the models trained will be stored locally
+#' @param directory path to a local directory to store the trained models
+#' @param sort_metric Metric to sort the leaderboard by (passed to autoML).
+#'                    For binomial classification
+#'                    choose between "AUC", "AUCPR", "logloss", "mean_per_class_error",
+#'                    "RMSE", "MSE". For regression choose between "mean_residual_deviance",
+#'                    "RMSE", "MSE", "MAE", and "RMSLE". For multinomial classification choose
+#'                    between "mean_per_class_error", "logloss", "RMSE", "MSE". Default is
+#'                    "AUTO". If set to "AUTO", then "AUC" will be used for binomial classification,
+#'                    "mean_per_class_error" for multinomial classification, and
+#'                    "mean_residual_deviance" for regression.
 #' @param seed random seed (recommended)
 #' @param verbatim logical. if TRUE, it reports additional information about the
 #'                 progress of the model training, particularly used for debugging.
+#' @param ignore_config arguments to be passed to h2o.init()
+#' @param bind_to_localhost arguments to be passed to h2o.init()
+#' @param insecure arguments to be passed to h2o.init()
+#' @param nthreads arguments to be passed to h2o.init()
+#' @param max_mem_size arguments to be passed to h2o.init()
+#' @param min_mem_size arguments to be passed to h2o.init()
+#' @param startH2O Logical. if TRUE, h2o server will be initiated.
+#' @param ... parameters to be passed to autoML algorithm in h2o package
 #' @return a list including the ensemble model and the top-rank models that were
 #'         used in the model
 #' @author E. F. Haghish
@@ -141,8 +172,7 @@ autoEnsemble <- function(
                      #to outperform other strategies such as best of families and best models.
                      save_models = FALSE,
                      directory = paste("autoEnsemble", format(Sys.time(), "%d-%m-%y-%H:%M")),
-                     zip = FALSE,
-                     verbosity = NULL,
+                     ...,
 
                      # ensemble arguments
                      # ------------------
@@ -198,8 +228,9 @@ autoEnsemble <- function(
                        include_algos = include_algos,
                        project_name = "autoEnsemble",
                        seed = seed,
-                       verbosity = verbosity,
-                       keep_cross_validation_predictions = TRUE)
+                       verbosity = verbatim,
+                       keep_cross_validation_predictions = TRUE,
+                       ... )
 
   # STEP 2: build the autoEnsemble stacked ensemble
   # ============================================================
@@ -216,7 +247,6 @@ autoEnsemble <- function(
                      stop_rounds = stop_rounds,
                      reset_stop_rounds = reset_stop_rounds,
                      stop_metric = stop_metric,
-                     seed = seed,
                      verbatim = verbatim,
                      seed = seed)
 
@@ -239,7 +269,6 @@ autoEnsemble <- function(
 
   # STEP 4: return the stacked ensemble model
   # ============================================================
-
   return(ens)
 
 }
