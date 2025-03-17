@@ -8,13 +8,7 @@ Authors@R:
            email = "haghish@hotmail.com")
 Depends: 
     R (>= 3.5.0),
-Description: An AutoML algorithm is developed to construct homogeneous or 
-             heterogeneous stacked ensemble models using specified base-learners. 
-             Various criteria are employed to identify optimal models, enhancing 
-             diversity among them and resulting in more robust stacked ensembles. 
-             The algorithm optimizes the model by incorporating an increasing 
-             number of top-performing models to create a diverse combination. 
-             Presently, only models from 'h2o.ai' are supported.
+Description: The autoEnsemble R package is a stacking algorithm particularly tailored to imbalanced and severely skewed data. It automates the process of building homogeneous or heterogeneous stacked ensemble models by selecting "best" models according to different criteria. In doing so, it strategically searches for and selects diverse, high-performing base-learners to construct ensemble models optimized for skewed data. This package is particularly useful for addressing class imbalance in datasets, ensuring robust and effective model outcomes through advanced ensemble strategies which aim to stabilize the model, reduce its overfitting, and further improve its generalizability.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Imports:
